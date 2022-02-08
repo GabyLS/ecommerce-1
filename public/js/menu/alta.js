@@ -10,10 +10,14 @@ class FormularioAlta {
         /^[0-9]+$/, //regexp stock
         /^.+$/,     //regexp marca
         /^.+$/,     //regexp categoria
-        /^.+$/,     //regexp foto
         /^.+$/,     //regexp detalles
 
     ]
+    //****************drag and drop ***********
+    imagenSubida = ''
+    dropArea     = null
+    progressBar  = null
+    // *****************************************
 
     constructor(renderTablaAlta, guardarProducto) {
         
@@ -41,6 +45,40 @@ class FormularioAlta {
 
             if(guardarProducto) guardarProducto(producto)
         })
+
+        //****************drag and drop ***********
+        this.dropArea = document.getElementById('drop-area')
+        this.progressBar = document.getElementById('progress-bar')
+
+        //Para cancelar el evento automática de drag and drop
+        ;['dragenter','dragover','dragleave','drop'].forEach( eventName => {
+            this.dropArea.addEventListener(eventName, e => e.preventDefault())
+            document.body.addEventListener(eventName, e => e.preventDefault())
+        })
+
+        //Para remarcar la zona de drop al arrastrar una imagen dentro de ella
+        ;['dragenter','dragover'].forEach( eventName => {
+            this.dropArea.addEventListener(eventName, () => {
+                this.dropArea.classList.add('highlight')
+            })
+        })
+
+        //Para desmarcar la zona de drop al abandonar la zona de drop
+        ;['dragleave','drop'].forEach( eventName => {
+            this.dropArea.addEventListener(eventName, () => {
+                this.dropArea.classList.remove('highlight')
+            })
+        })
+
+        this.dropArea.addEventListener('drop', e => {
+            var dt = e.dataTransfer
+            var files = dt.files
+
+            this.handleFiles(files)
+        })
+
+        // *****************************************
+
     }
 
         setCustomValidityJS = function(mensaje, index) {
@@ -57,17 +95,16 @@ class FormularioAlta {
             this.camposValidos[2] &&
             this.camposValidos[3] &&
             this.camposValidos[4] &&
-            this.camposValidos[5] &&
-            this.camposValidos[6] 
+            this.camposValidos[5] 
+           
             
         return !valido
     }
 
     validar(valor, validador, index) {
     // console.log(valor,index)
-
         if(!validador.test(valor)) {
-            this.setCustomValidityJS('Campo no válido',index)
+            this.setCustomValidityJS('Este campo no es válido',index)
             this.camposValidos[index] = false
             this.button.disabled = true
             return null
@@ -86,26 +123,81 @@ class FormularioAlta {
             stock: this.inputs[2].value,
             marca: this.inputs[3].value,
             categoria: this.inputs[4].value,
-            foto: this.inputs[5].value,
-            detalles: this.inputs[6].value,
-            envio: this.inputs[7].checked,
+            foto: this.imagenSubida? `/uploads/${this.imagenSubida}` : '',
+            detalles: this.inputs[5].value,
+            envio: this.inputs[6].checked,
         }
     }
 
-    limpiarFormulario(){
-        //Borrar inputs
+    limpiarFormulario() {
+        //borrar inputs
         this.inputs.forEach(input => {
             if(input.type != 'checkbox') input.value = ''
             else if(input.type == 'checkbox') input.checked = false
         })
-        
     
         this.button.disabled = true
-        this.camposValidos = [false, false, false, false, false, false, false]
+        this.camposValidos = [false,false,false,false,false,false]
+   
+        let img = document.querySelector('#gallery img')
+        img.src = ''
+
+        this.initializeProgress()
+        this.imagenSubida = ''
+    }
+
+    // **************** drag and drop **********************
+    initializeProgress() {
+        this.progressBar.value = 0
+    }
+
+    updateProgress(porcentaje) {
+        this.progressBar.value = porcentaje
+    }
+
+    previewFile(file) {
+        let reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onloadend = function() {
+            let img = document.querySelector('#gallery img')
+            img.src = reader.result
         }
+    }
+
+    handleFiles = files => {
+        let file = files[0]
+        this.initializeProgress()
+        this.uploadFile(file)
+        this.previewFile(file)
+    }
+
+    uploadFile = file => {
+        var url = '/upload'
+
+        var xhr = new XMLHttpRequest()
+        var formdata = new FormData()
+
+        xhr.open('POST', url)
+
+        xhr.upload.addEventListener('progress', e => {
+            let porcentaje = (((e.loaded * 100.0) / e.total) || 100)
+            this.updateProgress(porcentaje)
+        })
+
+        xhr.addEventListener('load', () => {
+            if(xhr.status == 200) {
+                this.imagenSubida = JSON.parse(xhr.response).nombre
+            }
+        })
+
+        formdata.append('foto', file)
+        xhr.send(formdata)
+    }
+    // *****************************************************
+
 }
 
-function renderTablaAlta(validos, productos){
+function renderTablaAlta(validos, productos) {
 
     const xhr = new XMLHttpRequest
     xhr.open('get','plantillas/alta.hbs')
@@ -116,17 +208,17 @@ function renderTablaAlta(validos, productos){
 
             var template = Handlebars.compile(plantillaHbs);
             let html = template({ productos, validos })
-            document.getElementById('listado-productos').innerHTML = html 
-
+            document.getElementById('listado-productos').innerHTML = html            
         }
     })
     xhr.send()
 }
 
+
     // INICIALIZACIONES PARA EL FUNCIONAMIENTO DEL MODULO
     
     let formularioAlta = null
-    
+
     async function initAlta() {
         console.warn('initAlta()')
     

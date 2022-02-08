@@ -21,7 +21,7 @@ router.post('/', upload.single('foto'), (req, res, next) => {
     const file = req.file
 
     if(!file) {
-        const error = new Error('Error subiendo el archivo')
+        const error = new Error('Error al subir el archivo')
         error.httpStatuscode = 400
         return next(error)
     }

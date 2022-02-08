@@ -6,16 +6,19 @@
         <label for="nombre">Nombre</label>
         <input id="nombre" type="text" class="alta-input">
         <div class="validation"></div>
+        <!-- <div class="mensaje-validacion"></div> -->
     
         <!-- Campo de precio -->
         <label for="precio">Precio</label>
         <input id="precio" type="text" class="alta-input">
         <div class="validation"></div>
+        <!-- <div class="mensaje-validacion"></div> -->
     
         <!-- Campo de stock -->
         <label for="stock">Stock</label>
         <input id="stock" type="text" class="alta-input">
         <div class="validation"></div>
+        <!-- <div class="mensaje-validacion"></div> -->
     
         <!-- Campo de marca -->
         <label for="marca">Marca</label>
@@ -30,6 +33,7 @@
             <option>Bulldog Inglés</option>
         </select>
         <div class="validation"></div>
+        <!-- <div class="mensaje-validacion"></div> -->
     
         <!-- Campo de categoria -->
         <label for="categoria">Categoria</label>
@@ -55,9 +59,21 @@
         <div class="validation"></div>
     
         <!-- Campo de foto -->
-        <label for="foto">Foto</label>
+        <!-- <label for="foto">Foto</label>
         <input id="foto" type="text" placeholder="Seleccioná una foto" class="alta-input">
-        <div class="validation"></div>
+        <div class="validation"></div> -->
+
+        <div id="drop-area">
+            <p>Subir imágen al servidor con <b>file dialog</b> ó con <b>drag and drop</b> dentro del área punteada</p>
+            <br>
+
+            <input id="foto" type="file" accept="image/*" onchange="formularioAlta.handleFiles(this.files)">
+            <label class="button" for="foto">File dialog</label>
+            <br><br>
+
+            <progress id="progress-bar" max="100" value="0"></progress>
+            <div id="gallery"><img src="" alt=""></div>
+        </div>
     
         <!-- Campo de detalles -->
         <label for="detalles">Detalles</label>
@@ -67,12 +83,13 @@
         <!-- Campo de envio -->
         <label for="envio">Envio</label>
         <input id="envio" type="checkbox" class="alta-input">
-        <div class="validation"></div>
+        
+        <!-- <div class="mensaje-validacion"></div> -->
     
         <button>Agregar</button>
     </form>
 
-    <hr>
+    
     <h1>Listado de productos</h1>
     <br>
 

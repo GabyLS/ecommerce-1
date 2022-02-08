@@ -32,22 +32,22 @@
             </td>
             <td>{{detalles}}</td>
             {{#if envio}}
-            <td>Sí</td>
+            <td>Si</td>
             {{else}}
             <td>No</td>
             {{/if}}
-             <td>
-                    {{#if ../validos}}
-                        <button onclick="productoController.actualizarProducto('{{id}}')">Actualizar</button>
-                    {{else}}
-                        <button disabled onclick="productoController.actualizarProducto('{{id}}')">Actualizar</button>
-                    {{/if}}
-                    <button onclick="productoController.borrarProducto('{{id}}')">Borrar</button>
-                </td>
+            <td>
+                {{#if ../validos}}
+                    <button onclick="productoController.actualizarProducto('{{id}}')">Actualizar</button>
+                {{else}}
+                    <button disabled onclick="productoController.actualizarProducto('{{id}}')">Actualizar</button>
+                {{/if}}
+                <button onclick="productoController.borrarProducto('{{id}}')">Borrar</button>
+            </td>
         </tr>
         {{/each}}
 
     </table>
     {{else}}
-    <h3>No se encontraron productos</h3>
+    <h2>No se encontraron productos</h2>
 {{/if}}

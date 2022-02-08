@@ -12,7 +12,6 @@ function agregarCarrito(e,id,ref) {
     e.preventDefault()
     //console.log(id)
     //console.dir(ref)
-
     //ref.classList.toggle('card--seleccionada')
     let producto = productoController.productos.find( producto => producto.id == id )
     carritoController.agregarAlCarrito(producto)    
